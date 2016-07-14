@@ -189,7 +189,7 @@ var Asteroid = cc.Sprite.extend({
   onEnter: function() {
     this._super();
     this.setPosition(600, Math.random() * 320);
-    var moveAction = cc.MoveTo.create(2.5, new cc.Point(-100, Math.random() * 320));
+    var moveAction = cc.MoveTo.create(10.5, new cc.Point(-100, Math.random() * 320));
     this.runAction(moveAction);
     this.scheduleUpdate();
   },
