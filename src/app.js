@@ -29,11 +29,17 @@ var gameThrust = 0.1;
 //パーティクル
 var emitter;
 var　 audioEngine;
+var miss = 0;
+var missText;
 
 var gameScene = cc.Scene.extend({
 
     onEnter: function() {
         this._super();
+
+        missText = cc.LabelTTF.create("Miss: 0", "Arial", "32", cc.TEXT_ALIGNMENT_CENTER);
+        this.addChild(missText);
+        missText.setPosition(400, 50);
 
         gameLayer = new game();
         gameLayer.init();
@@ -53,6 +59,11 @@ var gameScene = cc.Scene.extend({
 var game = cc.Layer.extend({
     init: function() {
         this._super();
+        var gradient = cc.LayerGradient.create(cc.color(255, 100, 100, 255), cc.color(0xff, 0xff, 0x0, 255));
+      this.addChild(gradient);
+
+
+
         size = cc.director.getWinSize();
         //BGMと効果音のエンジンを追加
 
@@ -241,6 +252,7 @@ var ScrollingBG5 = cc.Sprite.extend({
     ctor: function() {
         this._super();
         this.initWithFile(res.land_png);
+
     },
     //onEnterメソッドはスプライト描画の際に必ず呼ばれる
     onEnter: function() {
@@ -257,6 +269,7 @@ var ScrollingBG5 = cc.Sprite.extend({
         }
     }
 });
+
 
 
 //重力（仮）で落下する　宇宙船　
@@ -300,13 +313,35 @@ var Ship = cc.Sprite.extend({
         }
     }
 });
+
+
 //小惑星クラス
 var Asteroid = cc.Sprite.extend({
+  sprite: null,
+  // ブロックを保持しておく配列
+  dropSpriteArray: null,
+  // 配列の宣言　ブロックの名前を指定
+  dropArray: [res.nagoya0_png, res.nagoya1_png, res.nagoya2_png, res.nagoya3_png, res.nagoya4_png, res.nagoya5_png, res.nagoya6_png],
     ctor: function() {
         this._super();
-        this.initWithFile(res.nagoya0_png);
+        //this.initWithFile(res.nagoya0_png);
+        var size = cc.director.getWinSize();
 
+               this.dropSpriteArray = new Array();
+               var i = 1;
+               for (i = 0; i < 1; i++) {
+                   var rnd = Math.floor(Math.random() * 7);
+
+                   this.sprite = new cc.Sprite(this.dropArray[rnd]);
+                   cc.log(i);
+                   cc.log(this.dropArray[i]);
+
+                   this.dropSpriteArray.push(this.sprite);
+                   // this.addChild(this.sprite);
+                   this.addChild(this.dropSpriteArray[i], 0);
+}
     },
+
 
     onEnter: function() {
         this._super();
@@ -327,6 +362,13 @@ var Asteroid = cc.Sprite.extend({
             //効果音を再生する
             //  audioEngine.playEffect("res/se_bang.mp3");
             audioEngine.playEffect(res.se_bang);
+             miss++;
+            missText.setString("Miss: " + miss);
+            //三回ミスするとthirdSceneへ
+            if (miss == 3) {
+                cc.director.runScene(new ResultScene());
+            }
+
             //bgmの再生をとめる
             if (audioEngine.isMusicPlaying()) {
                 audioEngine.stopMusic();

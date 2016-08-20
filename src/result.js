@@ -1,18 +1,13 @@
-//thirdScene.js
-//nextScene.js
-var ThirdLayer = cc.Layer.extend({
+var ResultLayer = cc.Layer.extend({
     ctor: function() {
         this._super();
         var size = cc.director.getWinSize();
         //画像
-        var sprite = cc.Sprite.create(res.Title_png);
+        var sprite = cc.Sprite.create(res.title_button_png);
         sprite.setPosition(size.width / 2, size.height / 2);
         sprite.setScale(0.8);
         this.addChild(sprite, 0);
 
-        var label = cc.LabelTTF.create("クリックでスタート", "Arial", 26);
-        label.setPosition(size.width / 2, size.height * 5 / 6);
-        this.addChild(label, 1);
 
         // タップイベントリスナーを登録する
         cc.eventManager.addListener({
@@ -34,16 +29,16 @@ var ThirdLayer = cc.Layer.extend({
 });
 
 
-var FirstScene = cc.Scene.extend({
+var ResultScene = cc.Scene.extend({
     onEnter: function() {
         this._super();
 
         // 背景レイヤーをその場で作る
-        var backgroundLayer = new cc.LayerColor(new cc.Color(0, 250, 200, 250));
+        var backgroundLayer = new cc.LayerColor(new cc.Color(250, 150, 150, 250));
         this.addChild(backgroundLayer);
-
+miss= 0;
         //ラベルとタップイベント取得
-        var layer3 = new ThirdLayer();
+        var layer3 = new ResultLayer();
         this.addChild(layer3);
 
     }

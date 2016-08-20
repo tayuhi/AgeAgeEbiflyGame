@@ -16,7 +16,8 @@ var res = {
     nagoya6_png : "res/nagoya6.png",
     bgm_main : "res/bgm_main.mp3",
     se_bang : "res/se_bang.mp3",
-    wave_png : "res/wave.png"
+    wave_png : "res/wave.png",
+    title_button_png : "res/title_button.png"
 };
 
 
