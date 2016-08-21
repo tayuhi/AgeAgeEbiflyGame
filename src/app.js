@@ -154,7 +154,7 @@ var game = cc.Layer.extend({
     },
     removeCoral2: function(coral2) {
         this.removeChild(coral2);
-    },
+    },あ
     //BGMと効果音の関数を追加
     /*
     playSe: function() {
