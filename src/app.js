@@ -23,6 +23,8 @@ var scrollSpeediwa = 2;
 var scrollSpeedisi = 5;
 //宇宙船で追加した部分　重力
 var ship;
+var coral;
+var coral2;
 var gameGravity = -0.05;
 //宇宙船を操作するで追加した部分 エンジンの推進力
 var gameThrust = 0.1;
@@ -31,15 +33,16 @@ var emitter;
 var　 audioEngine;
 var miss = 0;
 var missText;
+var score = 0;
+var scoreText;
+
 
 var gameScene = cc.Scene.extend({
 
     onEnter: function() {
         this._super();
 
-        missText = cc.LabelTTF.create("Miss: 0", "Arial", "32", cc.TEXT_ALIGNMENT_CENTER);
-        this.addChild(missText);
-        missText.setPosition(400, 50);
+
 
         gameLayer = new game();
         gameLayer.init();
@@ -51,6 +54,15 @@ var gameScene = cc.Scene.extend({
             //audioEngine.playMusic("res/bgm_main.mp3", true);
             audioEngine.playMusic(res.bgm_main, true);
         }
+        //ミスした回数
+        missText = cc.LabelTTF.create("Miss: 0", "Arial", "32", cc.TEXT_ALIGNMENT_CENTER);
+        this.addChild(missText);
+        missText.setPosition(400, 50);
+
+        //スコア
+        scoreText = cc.LabelTTF.create("Score: 0", "Arial", "32", cc.TEXT_ALIGNMENT_CENTER);
+        this.addChild(scoreText);
+        scoreText.setPosition(70, 50);
     },
 
 });
@@ -60,7 +72,7 @@ var game = cc.Layer.extend({
     init: function() {
         this._super();
         var gradient = cc.LayerGradient.create(cc.color(255, 100, 100, 255), cc.color(0xff, 0xff, 0x0, 255));
-      this.addChild(gradient);
+        this.addChild(gradient);
 
 
 
@@ -97,6 +109,10 @@ var game = cc.Layer.extend({
         this.scheduleUpdate();
         //小惑星の生成で追加
         this.schedule(this.addAsteroid, 0.5);
+        //サンゴ上
+        this.schedule(this.addCoral, 8.5);
+        //サンゴ下
+        this.schedule(this.addCoral2, 5.5);
         //ここからパーティクルの設定
         emitter = cc.ParticleSun.create();
         this.addChild(emitter, 1);
@@ -122,6 +138,22 @@ var game = cc.Layer.extend({
     },
     removeAsteroid: function(asteroid) {
         this.removeChild(asteroid);
+    },
+    //サンゴ上
+    addCoral: function(event) {
+        var coral = new Coral();
+        this.addChild(coral);
+    },
+    removeCoral: function(coral) {
+        this.removeChild(coral);
+    },
+    //サンゴ下
+    addCoral2: function(event) {
+        var coral2 = new Coral2();
+        this.addChild(coral2);
+    },
+    removeCoral2: function(coral2) {
+        this.removeChild(coral2);
     },
     //BGMと効果音の関数を追加
     /*
@@ -308,61 +340,43 @@ var Ship = cc.Sprite.extend({
 
         //宇宙船が画面外にでたら、リスタートさせる
         if (this.getPosition().y < 0 || this.getPosition().y > 320) {
+            miss++
+            missText.setString("Miss: " + miss);
+            //三回ミスするとthirdSceneへ
+            if (miss == 3) {
+                cc.director.runScene(new ResultScene());
+            }
             restartGame();
 
         }
     }
 });
 
-
-//小惑星クラス
-var Asteroid = cc.Sprite.extend({
-  sprite: null,
-  // ブロックを保持しておく配列
-  dropSpriteArray: null,
-  // 配列の宣言　ブロックの名前を指定
-  dropArray: [res.nagoya0_png, res.nagoya1_png, res.nagoya2_png, res.nagoya3_png, res.nagoya4_png, res.nagoya5_png, res.nagoya6_png],
+//上のサンゴクラス
+var Coral = cc.Sprite.extend({
     ctor: function() {
         this._super();
-        //this.initWithFile(res.nagoya0_png);
-        var size = cc.director.getWinSize();
-
-               this.dropSpriteArray = new Array();
-               var i = 1;
-               for (i = 0; i < 1; i++) {
-                   var rnd = Math.floor(Math.random() * 7);
-
-                   this.sprite = new cc.Sprite(this.dropArray[rnd]);
-                   cc.log(i);
-                   cc.log(this.dropArray[i]);
-
-                   this.dropSpriteArray.push(this.sprite);
-                   // this.addChild(this.sprite);
-                   this.addChild(this.dropSpriteArray[i], 0);
-}
+        this.initWithFile(res.coral_above_png);
     },
-
-
     onEnter: function() {
         this._super();
-        this.setPosition(600, Math.random() * 320);
-        var moveAction = cc.MoveTo.create(3.5, new cc.Point(-100, Math.random() * 320));
+        this.setPosition(600, 580);
+        var moveAction = cc.MoveTo.create(3.5, new cc.Point(-100, 320));
         this.runAction(moveAction);
         this.scheduleUpdate();
     },
     update: function(dt) {
-        //小惑星との衝突を判定する処理
         var shipBoundingBox = ship.getBoundingBox();
-        var asteroidBoundingBox = this.getBoundingBox();
+        var coralBoundingBox = this.getBoundingBox();
         //rectIntersectsRectは２つの矩形が交わっているかチェックする
-        if (cc.rectIntersectsRect(shipBoundingBox, asteroidBoundingBox) && ship.invulnerability == 0) {
-            gameLayer.removeAsteroid(this); //小惑星を削除する
+        if (cc.rectIntersectsRect(shipBoundingBox, coralBoundingBox) && ship.invulnerability == 0) {
+            gameLayer.removeCoral(this); //小惑星を削除する
             //ボリュームを上げる
             audioEngine.setEffectsVolume(audioEngine.getEffectsVolume() + 0.3);
             //効果音を再生する
             //  audioEngine.playEffect("res/se_bang.mp3");
             audioEngine.playEffect(res.se_bang);
-             miss++;
+            miss++;
             missText.setString("Miss: " + miss);
             //三回ミスするとthirdSceneへ
             if (miss == 3) {
@@ -375,10 +389,120 @@ var Asteroid = cc.Sprite.extend({
             }
             restartGame();
         }
+
+        //画面の外にでたサンゴを消去する処理
+        if (this.getPosition().x < -50) {
+            gameLayer.removeCoral(this)
+        }
+    }
+});
+
+//下のサンゴクラス
+var Coral2 = cc.Sprite.extend({
+    ctor: function() {
+        this._super();
+        this.initWithFile(res.coral_under_png);
+    },
+    onEnter: function() {
+        this._super();
+        this.setPosition(600, -200);
+        var moveAction = cc.MoveTo.create(5.5, new cc.Point(-100, 0));
+        this.runAction(moveAction);
+        this.scheduleUpdate();
+    },
+    update: function(dt) {
+        var shipBoundingBox = ship.getBoundingBox();
+        var coral2BoundingBox = this.getBoundingBox();
+        //rectIntersectsRectは２つの矩形が交わっているかチェックする
+        if (cc.rectIntersectsRect(shipBoundingBox, coral2BoundingBox) && ship.invulnerability == 0) {
+            gameLayer.removeCoral2(this); //小惑星を削除する
+            //ボリュームを上げる
+            audioEngine.setEffectsVolume(audioEngine.getEffectsVolume() + 0.3);
+            //効果音を再生する
+            //  audioEngine.playEffect("res/se_bang.mp3");
+            audioEngine.playEffect(res.se_bang);
+            miss++;
+            missText.setString("Miss: " + miss);
+            //三回ミスするとthirdSceneへ
+            if (miss == 3) {
+                cc.director.runScene(new ResultScene());
+            }
+
+            //bgmの再生をとめる
+            if (audioEngine.isMusicPlaying()) {
+                audioEngine.stopMusic();
+            }
+            restartGame();
+        }
+
+        //画面の外にでたサンゴを消去する処理
+        if (this.getPosition().x < -50) {
+            gameLayer.removeCoral2(this)
+        }
+    }
+});
+
+//小惑星クラス
+var Asteroid = cc.Sprite.extend({
+    sprite: null,
+    // ブロックを保持しておく配列
+    dropSpriteArray: null,
+    // 配列の宣言　ブロックの名前を指定
+    dropArray: [res.nagoya0_png, res.nagoya1_png, res.nagoya2_png, res.nagoya3_png, res.nagoya4_png, res.nagoya5_png, res.nagoya6_png],
+    ctor: function() {
+        this._super();
+        //this.initWithFile(res.nagoya0_png);
+        var size = cc.director.getWinSize();
+
+        this.dropSpriteArray = new Array();
+        var i = 1;
+        for (i = 0; i < 1; i++) {
+            var rnd = Math.floor(Math.random() * 7);
+
+            this.sprite = new cc.Sprite(this.dropArray[rnd]);
+            cc.log(i);
+            cc.log(this.dropArray[i]);
+
+            this.dropSpriteArray.push(this.sprite);
+            // this.addChild(this.sprite);
+            this.addChild(this.dropSpriteArray[i], 0);
+        }
+    },
+
+
+    onEnter: function() {
+        this._super();
+        this.setPosition(1600, Math.random() * 320);
+        var moveAction = cc.MoveTo.create(5.5, new cc.Point(-100, Math.random() * 320));
+        this.runAction(moveAction);
+        this.scheduleUpdate();
+    },
+    update: function(dt) {
+        //小惑星との衝突を判定する処理
+        var shipBoundingBox = ship.getBoundingBox();
+        var asteroidBoundingBox = this.getBoundingBox();
+
+        //rectIntersectsRectは２つの矩形が交わっているかチェックする
+        if (cc.rectIntersectsRect(shipBoundingBox, asteroidBoundingBox) && ship.invulnerability == 0) {
+            gameLayer.removeAsteroid(this); //小惑星を削除する
+            //ボリュームを上げる
+            audioEngine.setEffectsVolume(audioEngine.getEffectsVolume() + 0.3);
+            //効果音を再生する
+            //  audioEngine.playEffect("res/se_bang.mp3");
+            audioEngine.playEffect(res.se_bang);
+            score++;
+            scoreText.setString("Score: " + score + 10);
+            //bgmの再生をとめる
+            if (audioEngine.isMusicPlaying()) {
+                audioEngine.stopMusic();
+            }
+
+        }
         //画面の外にでた小惑星を消去する処理
         if (this.getPosition().x < -50) {
             gameLayer.removeAsteroid(this)
         }
+
     }
 });
 

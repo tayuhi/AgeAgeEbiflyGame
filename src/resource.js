@@ -14,6 +14,8 @@ var res = {
     nagoya4_png : "res/nagoya4.png",
     nagoya5_png : "res/nagoya5.png",
     nagoya6_png : "res/nagoya6.png",
+    coral_above_png : "res/coral_above.png",
+    coral_under_png : "res/coral_under.png",
     bgm_main : "res/bgm_main.mp3",
     se_bang : "res/se_bang.mp3",
     wave_png : "res/wave.png",

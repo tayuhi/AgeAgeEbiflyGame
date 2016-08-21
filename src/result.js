@@ -24,7 +24,7 @@ var ResultLayer = cc.Layer.extend({
     },
     onTouchMoved: function(touch, event) {},
     onTouchEnded: function(touch, event) {
-        cc.director.runScene(new gameScene());
+        cc.director.runScene(new FirstScene());
     },
 });
 
@@ -32,11 +32,12 @@ var ResultLayer = cc.Layer.extend({
 var ResultScene = cc.Scene.extend({
     onEnter: function() {
         this._super();
-
+        miss = 0;
+        score = 0;
         // 背景レイヤーをその場で作る
         var backgroundLayer = new cc.LayerColor(new cc.Color(250, 150, 150, 250));
         this.addChild(backgroundLayer);
-miss= 0;
+
         //ラベルとタップイベント取得
         var layer3 = new ResultLayer();
         this.addChild(layer3);
