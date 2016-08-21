@@ -1,12 +1,26 @@
 //thirdScene.js
 //nextScene.js
+
 var ThirdLayer = cc.Layer.extend({
     ctor: function() {
         this._super();
         var size = cc.director.getWinSize();
+        //音楽再生エンジン
+        audioEngine = cc.audioEngine;
+        if (!audioEngine.isMusicPlaying()) {
+            //audioEngine.playMusic("res/bgm_main.mp3", true);
+            audioEngine.playMusic(res.bgm_title, true);
+        }
+
         //画像
         var sprite = cc.Sprite.create(res.Title_png);
         sprite.setPosition(size.width / 2, size.height / 2);
+        sprite.setScale(0.8);
+        this.addChild(sprite, 0);
+
+        //画像
+        var sprite = cc.Sprite.create(res.go_png);
+        sprite.setPosition(size.width / 1.3, size.height / 7);
         sprite.setScale(0.8);
         this.addChild(sprite, 0);
 
@@ -30,6 +44,12 @@ var ThirdLayer = cc.Layer.extend({
     onTouchMoved: function(touch, event) {},
     onTouchEnded: function(touch, event) {
         cc.director.runScene(new gameScene());
+
+        //bgmの再生をとめる
+        if (audioEngine.isMusicPlaying()) {
+            audioEngine.stopMusic();
+        }
+
     },
 });
 

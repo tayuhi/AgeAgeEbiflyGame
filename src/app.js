@@ -30,7 +30,7 @@ var gameGravity = -0.05;
 var gameThrust = 0.1;
 //パーティクル
 var emitter;
-var　 audioEngine;
+var audioEngine;
 var miss = 0;
 var missText;
 var score = 0;
@@ -110,9 +110,9 @@ var game = cc.Layer.extend({
         //小惑星の生成で追加
         this.schedule(this.addAsteroid, 0.5);
         //サンゴ上
-        this.schedule(this.addCoral, 8.5);
+        this.schedule(this.addCoral, 10.5);
         //サンゴ下
-        this.schedule(this.addCoral2, 5.5);
+        this.schedule(this.addCoral2, 12.5);
         //ここからパーティクルの設定
         emitter = cc.ParticleSun.create();
         this.addChild(emitter, 1);
@@ -154,7 +154,7 @@ var game = cc.Layer.extend({
     },
     removeCoral2: function(coral2) {
         this.removeChild(coral2);
-    },あ
+    },
     //BGMと効果音の関数を追加
     /*
     playSe: function() {
@@ -321,9 +321,11 @@ var Ship = cc.Sprite.extend({
         //宇宙船を操作するで追加した部分
         if (this.engineOn) {
             this.ySpeed += gameThrust;
+            this.initWithFile(res.shrimp01_png);
             //ここでパーティクルエフェクトを宇宙船のすぐ後ろに配置している
             emitter.setPosition(this.getPosition().x - 25, this.getPosition().y);
         } else {
+            this.initWithFile(res.ship_png);
             //エンジンOffのときは画面外に配置
             emitter.setPosition(this.getPosition().x - 250, this.getPosition().y);
         }
@@ -340,6 +342,7 @@ var Ship = cc.Sprite.extend({
 
         //宇宙船が画面外にでたら、リスタートさせる
         if (this.getPosition().y < 0 || this.getPosition().y > 320) {
+            audioEngine.playEffect(res.se_flee1);
             miss++
             missText.setString("Miss: " + miss);
             //三回ミスするとthirdSceneへ
@@ -361,7 +364,7 @@ var Coral = cc.Sprite.extend({
     onEnter: function() {
         this._super();
         this.setPosition(600, 580);
-        var moveAction = cc.MoveTo.create(3.5, new cc.Point(-100, 320));
+        var moveAction = cc.MoveTo.create(2.5, new cc.Point(-100, 320));
         this.runAction(moveAction);
         this.scheduleUpdate();
     },
@@ -375,7 +378,7 @@ var Coral = cc.Sprite.extend({
             audioEngine.setEffectsVolume(audioEngine.getEffectsVolume() + 0.3);
             //効果音を再生する
             //  audioEngine.playEffect("res/se_bang.mp3");
-            audioEngine.playEffect(res.se_bang);
+            audioEngine.playEffect(res.se_Death);
             miss++;
             missText.setString("Miss: " + miss);
             //三回ミスするとthirdSceneへ
@@ -383,10 +386,7 @@ var Coral = cc.Sprite.extend({
                 cc.director.runScene(new ResultScene());
             }
 
-            //bgmの再生をとめる
-            if (audioEngine.isMusicPlaying()) {
-                audioEngine.stopMusic();
-            }
+
             restartGame();
         }
 
@@ -406,7 +406,7 @@ var Coral2 = cc.Sprite.extend({
     onEnter: function() {
         this._super();
         this.setPosition(600, -200);
-        var moveAction = cc.MoveTo.create(5.5, new cc.Point(-100, 0));
+        var moveAction = cc.MoveTo.create(1.5, new cc.Point(-100, 0));
         this.runAction(moveAction);
         this.scheduleUpdate();
     },
@@ -420,7 +420,7 @@ var Coral2 = cc.Sprite.extend({
             audioEngine.setEffectsVolume(audioEngine.getEffectsVolume() + 0.3);
             //効果音を再生する
             //  audioEngine.playEffect("res/se_bang.mp3");
-            audioEngine.playEffect(res.se_bang);
+            audioEngine.playEffect(res.se_Death);
             miss++;
             missText.setString("Miss: " + miss);
             //三回ミスするとthirdSceneへ
@@ -428,10 +428,6 @@ var Coral2 = cc.Sprite.extend({
                 cc.director.runScene(new ResultScene());
             }
 
-            //bgmの再生をとめる
-            if (audioEngine.isMusicPlaying()) {
-                audioEngine.stopMusic();
-            }
             restartGame();
         }
 
@@ -491,11 +487,8 @@ var Asteroid = cc.Sprite.extend({
             //  audioEngine.playEffect("res/se_bang.mp3");
             audioEngine.playEffect(res.se_bang);
             score++;
-            scoreText.setString("Score: " + score + 10);
-            //bgmの再生をとめる
-            if (audioEngine.isMusicPlaying()) {
-                audioEngine.stopMusic();
-            }
+            scoreText.setString("Score: " + score * 10);
+
 
         }
         //画面の外にでた小惑星を消去する処理
