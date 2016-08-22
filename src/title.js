@@ -2,8 +2,39 @@
 //nextScene.js
 
 var ThirdLayer = cc.Layer.extend({
+  sprite: null,
+// ブロックを保持しておく配列
+dropSpriteArray: null,
+// 配列の宣言　ブロックの名前を指定
+dropArray: [res.nagoya0_png,res.nagoya1_png, res.nagoya2_png, res.nagoya3_png, res.nagoya4_png, res.nagoya5_png,res.nagoya6_png,],
     ctor: function() {
         this._super();
+        var size = cc.director.getWinSize();
+
+       this.dropSpriteArray = new Array();
+       var i = 1;
+       for (i = 0; i < 10; i++) {
+           var rnd = Math.floor(Math.random() * 7);
+
+
+           this.sprite = new cc.Sprite(this.dropArray[rnd]);
+           cc.log(i);
+           cc.log(this.dropArray[i]);
+           this.sprite.attr({
+               x: size.width * (i + 1) / 10,
+               y: size.height * Math.random(),
+               scale: 0.1+Math.random()*1.9,
+               rotation: 0
+           });
+           this.dropSpriteArray.push(this.sprite);
+           // this.addChild(this.sprite);
+           this.addChild(this.dropSpriteArray[i], 0);
+
+
+           //  var drop01 = cc.Sprite.create(res.drop01_png);　
+           //  drop01.setPosition(size.width * i / 6, size.height / 5);　
+           //  this.addChild(drop01);
+       }
         var size = cc.director.getWinSize();
         //音楽再生エンジン
         audioEngine = cc.audioEngine;

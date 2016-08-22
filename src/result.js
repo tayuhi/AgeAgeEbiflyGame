@@ -51,7 +51,7 @@ var ResultScene = cc.Scene.extend({
         this._super();
         miss = 0;
         score = 0;
-      scoreText.setString("Score: " * score);
+        scoreText.setString("Score: " * score);
         // 背景レイヤーをその場で作る
         var backgroundLayer = new cc.LayerColor(new cc.Color(250, 150, 150, 250));
         this.addChild(backgroundLayer);
