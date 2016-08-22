@@ -17,10 +17,7 @@ var ResultLayer = cc.Layer.extend({
         sprite.setScale(0.8);
         this.addChild(sprite, 0);
 
-        //スコア
-        scoreText = cc.LabelTTF.create("Score: 0", "Arial", "32", cc.TEXT_ALIGNMENT_CENTER);
-        this.addChild(scoreText);
-        scoreText.setPosition(70, 50);
+
 
 
         // タップイベントリスナーを登録する
@@ -53,7 +50,7 @@ var ResultScene = cc.Scene.extend({
     onEnter: function() {
         this._super();
         miss = 0;
-      //  score = 0;
+        score = 0;
       scoreText.setString("Score: " * score);
         // 背景レイヤーをその場で作る
         var backgroundLayer = new cc.LayerColor(new cc.Color(250, 150, 150, 250));
